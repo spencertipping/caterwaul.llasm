@@ -1,0 +1,13 @@
+Tests for binary emitter -- should handle strings, numbers, etc, and report correct length along the way.
+
+caterwaul.clone('std seq llasm.binary-emitter')(function () {
+  var b = caterwaul.llasm.binary_emitter();
+  b.length               === 0  || null['new emitter has no length'];
+  b.write(0)             === b  || null['write() should return the emitter for 0'];
+  b.length               === 1  || null['write(0) failed to increment length'];
+  b[0]                   === 0  || null['write(0) failed to put 0 at index 0'];
+  b.write(10)            === b  || null['write() should return the emitter for numbers'];
+  b.length               === 2  || null['write(10) failed to increment length; got #{b.length} instead of 2'];
+  b[1]                   === 10 || null['write(10) failed to put 10 at index 1'];
+  b.write('hello world') === b  || null['write() should return the emitter for strings'];
+})();

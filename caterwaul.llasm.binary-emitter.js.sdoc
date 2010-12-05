@@ -13,7 +13,7 @@ Writing null or undefined does nothing. Writing an array writes each element of 
 
   caterwaul.tconfiguration('std seq', 'llasm.binary-emitter', function () {
     this.namespace('llasm') /se[_.binary_emitter() = seq[~[]] /se[
-      _.write() = let[as = arguments] in this /se[seq[~as *!x[x === null || x === undefined ? _ :
-                                                              x.constructor === String      ? seq[~x *[_.charCodeAt(0) & 0x7f] *!+(_/mb/write)] :
-                                                              x.constructor === Number      ? seq[x >>>[_ >>> 8] *[_ & 0xff] *!+(_/mb/push)] :
-                                                              x.constructor === Boolean     ? _.push(Number(x)) : seq[~x *!+(_/mb/write)]]]]]]});
+      _.write() = let[as = arguments] in _ /se[seq[~as *!x[x === null || x === undefined ? _ :
+                                                           x.constructor === String      ? seq[~x *[_.charCodeAt(0) & 0x7f] *!n[_.push(n)]] :
+                                                           x.constructor === Number      ? x ? seq[(x >>>[_ >>> 8] <<[_]) *[_ & 0xff] *!n[_.push(n)]] : _.push(x) :
+                                                           x.constructor === Boolean     ? _.push(Number(x)) : seq[~x *!n[_.write(n)]]]]]]]});
