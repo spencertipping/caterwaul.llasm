@@ -1,0 +1,4 @@
+You don't want to use this repository. Nobody has any good reason to assemble
+IA-32/ELF binaries from inside Javascript.
+
+However, if you do want to use it for some reason, it's MIT licensed as usual.
