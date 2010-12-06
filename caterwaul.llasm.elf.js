@@ -15,10 +15,12 @@
       _.rel    = struct()._unsigned_int('r_offset r_info'),
       _.rela   = struct()._unsigned_int('r_offset r_info r_addend'),
 
-      _.header.reasonable  = {e_ident: [0x7f, 69, 76, 70, 1, 1, 1, 4,  0, 0, 0, 0, 0, 0, 0, 16], e_type: 1, e_machine: 3, e_version: 1, e_phoff: _.header.length, e_shoff: 0, e_flags: 0,
-                              e_ehsize: _.header.length, e_phnum: 1, e_shentsize: 0, e_shnum: 0, e_shstrndx: 0},
-      _.phdr.reasonable(s) = let[o = _.header.length + _.phdr.length] in
-                             {p_type: 1, p_offset: o, p_vaddr: 0x08048000 + o, p_paddr: 0x08048000 + o, p_filesz: s.length, p_memsz: s.length, p_flags: 5, p_align: 0x1000},
+      console.log('header size is #{_.header.size()}'),
+
+      _.header.reasonable  = {e_ident: [0x7f, 69, 76, 70, 1, 1, 1, 0,  0, 0, 0, 0, 0, 0, 0, 0], e_type: 2, e_machine: 3, e_version: 1, e_entry: 0x08048000 + _.header.size() + _.phdr.size(),
+                              e_phoff: _.header.size(), e_shoff: 0, e_flags: 0, e_ehsize: _.header.size(), e_phentsize: _.phdr.size(), e_phnum: 1, e_shentsize: 0, e_shnum: 0, e_shstrndx: 0},
+      _.phdr.reasonable(s) = let[o = _.header.size() + _.phdr.size()] in
+                             {p_type: 1, p_offset: o, p_vaddr: 0x08048000 + o, p_paddr: 0x08048000 + o, p_filesz: s.size(), p_memsz: s.size(), p_flags: 5, p_align: 0x1000},
 
       _.trivial_code(s) = seq[_.header(_.header.reasonable) + _.phdr(_.phdr.reasonable(s)) + s]]]});
 

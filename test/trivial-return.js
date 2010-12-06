@@ -1,8 +1,8 @@
 // A trivial program written using the ELF library.
 // This program has no sections and implements the following code:
 
-// | mov $1, %eax
-//   mov $42, %ebx
+// | mov $1, %eax          ('_exit' system call)
+//   mov $42, %ebx         (exit code)
 //   int $0x80
 
 // The purpose is to return with exit code 42.
