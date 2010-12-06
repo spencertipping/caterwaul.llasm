@@ -15,8 +15,6 @@
       _.rel    = struct()._unsigned_int('r_offset r_info'),
       _.rela   = struct()._unsigned_int('r_offset r_info r_addend'),
 
-      console.log('header size is #{_.header.size()}'),
-
       _.header.reasonable  = {e_ident: [0x7f, 69, 76, 70, 1, 1, 1, 0,  0, 0, 0, 0, 0, 0, 0, 0], e_type: 2, e_machine: 3, e_version: 1, e_entry: 0x08048000 + _.header.size() + _.phdr.size(),
                               e_phoff: _.header.size(), e_shoff: 0, e_flags: 0, e_ehsize: _.header.size(), e_phentsize: _.phdr.size(), e_phnum: 1, e_shentsize: 0, e_shnum: 0, e_shstrndx: 0},
       _.phdr.reasonable(s) = let[o = _.header.size() + _.phdr.size()] in
