@@ -11,6 +11,9 @@ encodings, operand formats, etc. Appendix B.2 is particularly helpful, as it pre
 down-to-earth explanation of what's going on, I recommend http://www.c-jump.com/CIS77/CPU/x86/index.html; this goes over the more confusing parts of the Intel manuals such as ModR/M and SIB
 encoding.
 
+By the way, the documentation here was written while reading through (and learning/trying to understand) the Intel processor manuals. A lot of it is for my benefit later on; some stuff that
+may not seem relevant is included because the manuals mention it.
+
   caterwaul.tconfiguration('std seq', 'llasm.ia32-sse2', function () {
     let*[
 
@@ -34,11 +37,11 @@ ModR/M and SIB encoding.
 There are four basic cases for R/M or SIB addressing, plus a couple of exceptions for SIB escaping. They are these:
 
 | 1. mod = b00 and r/m !== b10X (esp or ebp). r/m is an indirected register, e.g. mod = b00, r/m = 000 specifies (eax).
-  2. mod = b01 and r/m !== b100 (esp). r/m is indirected, plus a signed 8-bit displacement.
-  3. mod = b10 and r/m !== b100 (esp). r/m is indirected, plus a signed 32-bit displacement.
-  4. mod = b11. r/m is a direct register value.
-  5. mod = b00 and r/m === b100 (esp). SIB is used directly.
-  6. mod = b00 and r/m === b101 (ebp). 32-bit displacement is used directly.
+  2. mod = b00 and r/m === b100 (esp). SIB is used directly.
+  3. mod = b00 and r/m === b101 (ebp). 32-bit displacement is used directly.
+  4. mod = b01 and r/m !== b100 (esp). r/m is indirected, plus a signed 8-bit displacement.
+  5. mod = b10 and r/m !== b100 (esp). r/m is indirected, plus a signed 32-bit displacement.
+  6. mod = b11. r/m is a direct register value.
 
 Within the SIB byte, the high two bits (scale) determine the multiplier of the scaled register; 00 = 1, 01 = 2, 10 = 4, and 11 = 8. It isn't possible to scale esp (which makes sense). The next
 three bits (index) contain the register to be scaled, and the last three (base) contain the base offset. Using ebp as a base offset does some weird things. If mod is b00, then it throws ebp
@@ -51,3 +54,4 @@ into an 'extend-the-sign-of-the-immediate-byte' flag), and the second-lowest bit
 These all have short forms for EAX, so use those if possible.
 
   integer_arithmetic = {add: 0, or: 1, adc: 2, xor: 3, and: 4, sbb: 5, sub: 6, cmp: 7},
+
