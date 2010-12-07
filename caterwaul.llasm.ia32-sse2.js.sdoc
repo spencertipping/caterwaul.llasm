@@ -55,3 +55,81 @@ These all have short forms for EAX, so use those if possible.
 
   integer_arithmetic = {add: 0, or: 1, adc: 2, xor: 3, and: 4, sbb: 5, sub: 6, cmp: 7},
 
+Assembler syntax.
+Unlike the usual prefix-form assembler syntax used by GNU and Intel, I'm using an infix form that is better suited to being represented in Javascript. It borrows some elements from each one.
+Statements are separated by commas, operators are written as /mov/ (for binary), or /jmp (for unary) and are placed after their first operand, and neither registers nor immediates have any
+prefixes. Also, variables are allowed anywhere that a number would have worked (just don't call it eax or something).
+
+I'm using the Intel operand ordering; that is, destination is on the left. This makes sense if you think about the operators as being infix forms of assignment, e.g. =, +=, -=, etc.
+
+| eax /mov/ ebx,        // = movl %ebx, %eax   (AT&T syntax equivalent)
+  eax /add/ 4,          // = addl %eax, 4
+  [ebx] /mov/ eax,      // = movl (%ebx), %eax
+  foo /l,               // = .foo:
+  ebx /test/ ebx,       // = testl %ebx, %ebx
+  foo /ja,              // = ja .foo
+
+SIB and immediates can also be built using the [] notation:
+
+| [2*ebx + ecx] /mov/ eax,
+  [0x08048000]  /mov/ eax,
+  0x80 /int
+
+  First-class assembly.
+  Assembler statements are ultimately values, so you can splice one stream of assembly into another one.
+
+Appendix.
+This is stuff that led to the development of the system as it exists now. I doubt that it's useful, but disk space is cheap so I'm keeping it around :)
+
+  Thought process for deriving the assembler syntax.
+  There are a couple of different ways to do present the assembler interface. One is to have an OOP interface similar to the one V8 uses; this has the advantage that everything is properly
+  first-class. The downside is that symbols become global; register names need to be referenced somehow. Another downside is the overhead involved in constructing indirected references (since
+  JS doesn't have operator-overloading in the general case).
+
+  Much better is to have a macro language that recognizes certain forms. For instance:
+
+  | mov([eax], ebx),
+    l(foo),
+    add(4, eax),
+    ja(foo),
+    ...
+
+  The ergonomics aren't great -- lots of unnecessary parens and commas. The parens and inner commas can go if registers become prefixed with operators (GNU syntax, sort of):
+
+  | mov %[eax] %ebx,
+    l .foo,
+    add +4 %eax,
+    ja .foo,
+    ...
+
+  Even that isn't too great, though. There isn't much of a system for indirected registers (it's quite unsystematic) and the syntax tree isn't very reflective of what's going on. What about
+  infix?
+
+  | ebx <- [eax]
+    ~foo
+    eax += 4,
+    ja(foo),
+    ...
+
+  The problem with the first syntax was that it represented the system well but had too much boilerplate. The second syntax didn't represent the system well and had an acceptable amount of
+  boilerplate; and the third syntax was just weird.
+
+  Let's think about this differently. There are a couple of different operators that are flexible; that is, they can be unary or binary. They are [], -, and +. Since [] has meaning in the
+  Intel assembly syntax, I probably don't want to use that. + requires the shift key, so it's probably best not used for common stuff. Maybe -?
+
+  | mov [-eax] -ebx,
+    l .foo,
+    add +4 -eax,
+    ja .foo,
+    ...
+
+  This looks promising. The only downside of paren-less invocation is that if you put a comma between operands you'll bork your assembler. (This might be kind of a big deal, actually.) The
+  postfix slash notation isn't bad to type:
+
+  | [eax] /mov/ ebx,
+    foo /l,
+    eax /add/ 4,
+    foo /ja,
+    ...
+
+  It is also very regular and gives you enough flexibility to write any of the more complex addressing forms. It's a bit unorthodox, but I think I'll go with it.
