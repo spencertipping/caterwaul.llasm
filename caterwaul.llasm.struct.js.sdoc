@@ -1,12 +1,16 @@
 C-style structure definition | Spencer Tipping
 Licensed under the terms of the MIT source code license
 
-Acknowledgements.
-The floating-point conversion code (when it ends up being written) will be based heavily on Jonas Raoni Soares Silva's implementation, available at http://jsfromhell.com/classes/binary-parser.
+Introduction.
+This code gives you a way to produce binary-compatible APIs against C structures. It isn't complete yet, but it's currently used in the ELF generator.
 
-Disclaimers.
-This code probably won't work in a lot of places. It only really needs to work in a couple of JS environments, Node being one of them. It's unlikely that you'll be in an environment where it's
-OK to link to C code or generate executables that do, so I figure a certain lack of portability is acceptable.
+  Acknowledgements.
+  The floating-point conversion code (when it ends up being written) will be based heavily on Jonas Raoni Soares Silva's implementation, available at
+  http://jsfromhell.com/classes/binary-parser.
+
+  Disclaimers.
+  This code probably won't work in a lot of places. It only really needs to work in a couple of JS environments, Node being one of them. It's unlikely that you'll be in an environment where
+  it's OK to link to C code or generate executables that do, so I figure a certain lack of portability is acceptable.
 
   caterwaul.tconfiguration('std seq', 'llasm.struct', function () {
     this.namespace('llasm').struct = struct /se[

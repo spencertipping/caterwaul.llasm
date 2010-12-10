@@ -23,10 +23,12 @@ processor's dynamic branch predictor), and the repeat prefixes would rarely be u
 as a part of the instruction opcode rather than as prefixes. Finally, REX is used only for 64-bit stuff (the bit layout is quite a hack :) ).
 
 Little/big-endian conversion.
-Any instruction that takes a displacement or immediate will require quantities to be in little-endian format. These functions swap endianness for 16 and 32-bit numbers:
+Any instruction that takes a displacement or immediate will require quantities to be in little-endian format. These functions construct little-endian-encoded byte arrays for 16 and 32-bit
+numbers respectively (and a helper to make sure that 8-bit numbers are integers etc.):
 
-  se16(n) = (n & 0xff) << 8  | (n & 0xff00) >> 8,
-  se32(n) = (n & 0xff) << 24 | (n & 0xff00) << 8 | (n & 0xff0000) >> 8 | (n & 0xff000000) >> 24,
+  le8(n)  = seq[~[n & 0xff]],
+  le16(n) = seq[~[n & 0xff, n >> 8 & 0xff]],
+  le32(n) = seq[~[n & 0xff, n >> 8 & 0xff, n >> 16 & 0xff, n >> 24 & 0xff]],
 
 Register indexes.
 Registers are always referred to by bitwise index. The indexes are (minus xmmN indexes, which are obvious):
@@ -48,12 +50,36 @@ three bits (index) contain the register to be scaled, and the last three (base) 
 away and just uses a 32-bit displacement (plus the scaled quantity). For mod = b01, you get an 8-bit displacement plus the value of ebp. For mod = b10, you get 32-bit displacement plus ebp.
 When mod = b11, you just get ebp with no displacement.
 
+  gt8(x) = x !== x & 0xff,  inverse_multipliers = {1: 0, 2: 1, 4: 2, 8: 3},
+
+  modrm_byte(mod, reg, rm)   = seq[~[mod << 6 | reg << 3 | rm]],  sib_byte(scale, index, base) = seq[~[inverse_multipliers[scale] << 6 | index << 3 | base]],
+  indirect_register(reg, rm) = seq[~[reg << 3 | rm]],             direct_register(reg, rm)     = seq[~[0x03 << 6 | reg << 3 | rm]],
+
+  offset(reg, offset)                            = seq[~[modrm_byte(0x00, reg, ri.ebp) + le32(offset)]],
+  scaled_register(reg, rm, scale, base)          = seq[~[indirect_register(reg, ri.esp), inverse_multipliers[scale] << 6 | rm << 3 | base]],
+  offset_indirect_register(reg, rm, offset)      = gt8(offset) ? seq[modrm_byte(0x02, reg, ri.ebp) + le32(offset)] : seq[modrm_byte(0x01, reg, ri.ebp) + le8(offset)],
+  offset_scaled_register(reg, rm, scale, offset) = !scale ? offset(reg, offset) : scale === 1 ? offset_indirect_register(reg, rm, offset) :
+                                                                                                gt8(offset) ? seq[modrm_byte(0x02, reg, ri.esp) + sib_byte(scale, rm, ri.ebp) + le32(offset)] :
+                                                                                                              seq[modrm_byte(0x01, reg, ri.esp) + sib_byte(scale, rm, ri.ebp) +  le8(offset)],
+
 Integer arithmetic instructions.
 These all follow some conventions. The LSB of the opcode determines size (0 is 8-bit, 1 is 32-bit), the MSB indicates the presence of an immediate operand (which converts the direction bit
 into an 'extend-the-sign-of-the-immediate-byte' flag), and the second-lowest bit is a direction flag (if 0, then assign from memory to register, otherwise assign from register to memory).
-These all have short forms for EAX, so use those if possible.
+These all have short forms for eax, so we use those if possible.
 
-  integer_arithmetic = {add: 0, or: 1, adc: 2, xor: 3, and: 4, sbb: 5, sub: 6, cmp: 7},
+Because the direction flag isn't fully redundant, you pass in an 'rtl' flag to each of the integer_ methods. While normally assignments are made left-to-right, this inverts the direction to be
+right-to-left. Appropriate special-casing is done to avoid encoding the direction flag incorrectly when assigning an immediate into eax.
+
+  integer_arithmetic = {add: 0, or: 1, adc: 2, xor: 3, and: 4, sbb: 5, sub: 6, cmp: 7},  integer_opcode(op, rtl) = seq[~[op << 3 | rtl << 1 | 1]],
+
+  integer_op_immediate_register(op, reg, i)                  = reg === ri.eax ? seq[~[0x05 | op << 3], le32(i)] : seq[~[0x81, 0xc0 | op << 3 | reg] + le32(i)],
+  integer_op_immediate_memory(op, rtl, rm, scale, offset, i) = seq[~[0x81 | rtl << 1] + offset_scaled_register(op, rm, scale, offset) + le32(i)],
+  integer_op_mod_rm(op, rtl, operands)                       = seq[integer_opcode(op, rtl) + operands],
+
+Move instructions.
+This includes moving and conditional moving. The encodings are similar to the integer instructions, but there are more short forms.
+
+  mov_immediate_register(rtl, reg, i) = seq[~[0xb8 | reg] + le32(i)] : 
 
 Assembler syntax.
 Unlike the usual prefix-form assembler syntax used by GNU and Intel, I'm using an infix form that is better suited to being represented in Javascript. It borrows some elements from each one.
@@ -63,7 +89,7 @@ prefixes. Also, variables are allowed anywhere that a number would have worked (
 I'm using the Intel operand ordering; that is, destination is on the left. This makes sense if you think about the operators as being infix forms of assignment, e.g. =, +=, -=, etc.
 
 | eax /mov/ ebx,        // = movl %ebx, %eax   (AT&T syntax equivalent)
-  eax /add/ 4,          // = addl %eax, 4
+  eax /add/ 4,          // = addl $4,   %eax
   [ebx] /mov/ eax,      // = movl (%ebx), %eax
   foo /l,               // = .foo:
   ebx /test/ ebx,       // = testl %ebx, %ebx
@@ -76,7 +102,8 @@ SIB and immediates can also be built using the [] notation:
   0x80 /int
 
   First-class assembly.
-  Assembler statements are ultimately values, so you can splice one stream of assembly into another one.
+  Assembler statements are ultimately values, so you can splice one stream of assembly into another one. Labels will be resolved after the assembly is pieced together. Each assembly statement
+  is either an array of numbers (specifying the bytes to comprise the operation), an object of the form {label: x}, or a string that names a label.
 
 Appendix.
 This is stuff that led to the development of the system as it exists now. I doubt that it's useful, but disk space is cheap so I'm keeping it around :)
