@@ -15,8 +15,9 @@ This code gives you a way to produce binary-compatible APIs against C structures
 Supported encodings.
 Right now it just encodes integers in various widths, endian-encodings, and signedness. For example:
 
-| struct()._unsigned_int('foo bar bif')         // three unsigned ints
-  struct()._unsigned_be_int('foo bar bif')      // big-endian ints
+| struct()._unsigned_int('foo bar bif').        // three unsigned ints
+           _unsigned_be_int('foob barb bifb').  // big-endian ints
+           _char('xs', 10)                      // an array of 10 chars
 
   caterwaul.tconfiguration('std seq', 'llasm.struct', function () {
     this.namespace('llasm').struct = struct /se[

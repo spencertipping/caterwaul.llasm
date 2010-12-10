@@ -13,6 +13,11 @@ caterwaul.clone('std seq llasm.numerics')(function () {
   xabcdef[1] === 0xcd || null['xabcdef[1] should be #{0xcd}, not #{xabcdef[1]}'];
   xabcdef[2] === 0xef || null['xabcdef[2] should be #{0xef}, not #{xabcdef[2]}'];
 
+  xlabcdef.length === 3 || null['xlabcdef.length should not be #{xlabcdef.length}'];
+  xlabcdef[0] === 0xef || null['xlabcdef[0] should not be #{xlabcdef[0]}'];
+  xlabcdef[1] === 0xcd || null['xlabcdef[1] should not be #{xlabcdef[1]}'];
+  xlabcdef[2] === 0xab || null['xlabcdef[2] should not be #{xlabcdef[2]}'];
+
   x4050.length === 2 || null['x4050.length should not be #{x4050.length}'];
   x4050[0] === 64 || null['x4050[0] should not be #{x4050[0]}'];
   x4050[1] === 80 || null['x4050[1] should not be #{x4050[1]}'];

@@ -7,8 +7,8 @@
 
 // The purpose is to return with exit code 42.
 
-caterwaul.clone('std seq llasm.elf')(function (require) {
-  var bytes = caterwaul.llasm.elf32.trivial_code(seq[~[0xc7, 0xc0, 1, 0, 0, 0,  0xc7, 0xc3, 42, 0, 0, 0,  0xcd, 0x80]]);
+caterwaul.clone('std seq llasm.numerics llasm.elf')(function (require) {
+  var bytes = caterwaul.llasm.elf32.trivial_code(seq[~[] + xc7c0+xl00000001 + xc7c3+xl0000002a + xcd_80]);
 
   require('fs').writeFile('test/return-42', new Buffer(bytes.length) /se[seq[bytes *!b[_[bi] = b]]], fn_[require('fs').chmod('test/return-42', 0700)]);
 })(require);
