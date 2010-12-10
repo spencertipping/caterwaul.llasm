@@ -1,8 +1,0 @@
-A trivial program written using the ELF library.
-See the 'trivial-return' test for context.
-
-caterwaul.clone('std seq llasm.elf llasm.ia32-sse2')(function (require) {
-  var bytes = caterwaul.llasm.elf32.trivial_code(ia32[eax /mov/ 1, ebx /mov/ 43, 0x80 /int]);
-
-  require('fs').writeFile('test/return-43', new Buffer(bytes.length) /se[seq[bytes *!b[_[bi] = b]]], fn_[require('fs').chmod('test/return-42', 0700)]);
-})(require);
