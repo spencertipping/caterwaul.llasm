@@ -22,7 +22,7 @@
   caterwaul.tconfiguration('std seq', 'llasm.numerics', function () {
     this.configure('std llasm.struct').macro(qs[_], fn[x][x && /^[bx]l?[0-9a-f_]{2,}$/.test(x.data) && x.data.replace(/^[xb]l?/, '').replace(/_/g, '') /re[
                                                             seq[0 >>>[_ + lm] <<n[n < _.length]] /re.ns[seq[ns *i[_.substring(i, i + lm)] *~[~_ *+d /[_ << shift | _0]]]]
-                                                                                                    /re[le ? _.reversed() : _] /re[new this.ref(_.slice())], unless[_.length & lm - 1],
+                                                                                                    /re[le ? _.reversed() : _] /re[new this.ref(_)], unless[_.length & lm - 1],
                                                             where*[d(x) = '0123456789abcdef'.indexOf(x), ca = x.data/mb/charAt, h = ca(0) === 'x', le = ca(1) === 'l',
                                                                    m = 1 + !h * 2, shift = h ? 4 : 1, lm = 1 << m]]])});
 

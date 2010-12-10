@@ -1,0 +1,19 @@
+A trivial program written using the ELF library.
+This program has no sections and implements the following code:
+
+| mov $1, %eax          ('_exit' system call)
+  mov $42, %ebx         (exit code)
+  int $0x80
+
+The purpose is to return with exit code 42.
+
+var c = caterwaul.clone('std seq llasm.numerics llasm.elf llasm.offsets');
+c(function (require) {
+  var code = qas[xc7 /b11_000000 /xl00000001
+                |xc7 /b11_000011 /[42] /x000000
+                |xcd_80];
+
+  var bytes = caterwaul.llasm.elf32.trivial_code(code);
+
+  require('fs').writeFile('test/return-42-2', new Buffer(bytes.length) /se[seq[bytes *!b[_[bi] = b]]], fn_[require('fs').chmod('test/return-42-2', 0700)]);
+})(require);
