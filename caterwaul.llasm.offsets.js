@@ -52,7 +52,7 @@
            sub(t, f) = sub /se[def(t, fn[x, y, z][f.replace({x: expand(x), _x: x, y: expand(y), _y: y, z: expand(z), _z: z})])]] in
 
       sub /se[_(qs[_, _], qs[x.concat(y)])(qs[_ / _], qs[x.concat(y)])(qs[_ | _], qs[x.concat(y)])(qs[~_], qs[_x]),
-              def(qs[_._], fn[x, y]['#{x.data}:#{y.data}'])(qs[_[_]._], fn[l, o, f]['#{l.data}:#{o.data}:#{f.data}'])(qs[+_], fn[l][l.data /re[/^\w+$/.test(_) && '"#{_}"']]),
+              def(qs[_._], fn[x, y]['"#{x.data}:#{y.data}"'])(qs[_[_]._], fn[l, o, f]['"#{l.data}:#{o.data}:#{f.data}"'])(qs[+_], fn[l][l.data /re[/^\w+$/.test(_) && '"#{_}"']]),
               this.rmacro(qs[qas[_]], expand)]],
 
     where*[offset(xs, options) = offset.expand(offset.pre_expand(xs), options),

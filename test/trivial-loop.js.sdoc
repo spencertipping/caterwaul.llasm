@@ -1,0 +1,20 @@
+Trivial loop on ECX test.
+Implements this logic:
+
+| xorl %ebx, %ebx
+  movl $1, %eax
+  movl $100, %ecx
+  .top:
+    addl %ecx, %ebx
+    dec %ecx
+    test %ecx, %ecx
+    ja .top
+  int $0x80
+
+caterwaul.clone('std seq llasm.numerics llasm.elf llasm.offsets')(function (require) {
+  var bytes = caterwaul.llasm.elf32.trivial_code(qas[x31 /b11_011011, xb001_b164 |+top, x01 /b11_001011 | xff /b11_001001
+                                                                                      | x85 /b11_001001 | x77 /top[-1].r8
+                                                                                 |xcb80]);
+  require('fs') /se.fs[
+    fs.writeFile('test/return-550', new Buffer(bytes.length) /se.bs[seq[bytes *![bs[_i] = _]]], fn_[fs.chmodSync('test/return-550', 0700)])];
+})(require);
