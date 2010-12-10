@@ -26,7 +26,7 @@ Right now it just encodes integers in various widths, endian-encodings, and sign
                                                  _.field(bytes, fn[x][seq[offsets *[(signed ? x >> _ : x >>> _) & 0xff]]], fn[xs][seq[offsets *[xs[_i] << _] /[_ | _0]]]),
 
       _.methods = {} /se[_.add(name, field) = this /se[seq[qw(name) *!n[_.field_names.push(n), _.fields.push(field)]]],
-                         seq[~'char short int long'.split(/\s+/) *~[~[['_unsigned_#{_}', 1 << _i], ['_#{_}', 1 << _i], ['_unsigned_be_#{_}', 1 << _i], [_be_#{_}', 1 << _i]]] /~[_ + _0]
+                         seq[~'char short int long'.split(/\s+/) *~[~[['_unsigned_#{_}', 1 << _i], ['_#{_}', 1 << _i], ['_unsigned_be_#{_}', 1 << _i], ['_be_#{_}', 1 << _i]]] /~[_ + _0]
                                                                  *!t[_[t[0]](name, n) = this.add(name, struct.integral(t[1], ! /_be_/.test(t[0]), ti & 1) /re[n ? struct.array(n, _) : _])]]]],
     where*[naturals = seq[0 >>>[_ + 1]],
            qw(s)    = s.split ? seq[~s.split(/\s+/)] : seq[~[s]],

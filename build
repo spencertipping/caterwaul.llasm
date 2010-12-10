@@ -296,13 +296,12 @@ __3c6177256de0fddb721f534c3ad8c0ee
 meta::data('main', 'server.js');
 meta::data('name', 'build');
 meta::data('quiet', '1');
-meta::data('sources', <<'__85fa3d0d8e7c0f0449600c62ddb0274a');
+meta::data('sources', <<'__5ad9ddf3ad8feaf17755facc4dba3126');
 # The source files for your program -- all except the server process:
-caterwaul.llasm.binary-emitter.js
+caterwaul.llasm.numerics.js
 caterwaul.llasm.struct.js
-#caterwaul.llasm.ia32-sse2.js
 caterwaul.llasm.elf.js
-__85fa3d0d8e7c0f0449600c62ddb0274a
+__5ad9ddf3ad8feaf17755facc4dba3126
 
 meta::data('watching', '1');
 meta::function('cat', 'join "\\n", retrieve(@_);');
