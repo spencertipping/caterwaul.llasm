@@ -1,0 +1,18 @@
+Offset assembler | Spencer Tipping
+Licensed under the terms of the MIT source code license
+
+Introduction.
+Besides providing mnemonics for machine operations, assemblers (perhaps more importantly) set up your relative offsets correctly. This module provides that functionality for sequences. Given a
+sequence with labels (strings) and references (also strings), it removes the strings and sets up the references to point to the correct addresses. Addresses can be relative or absolute, and of
+varying sizes and endianness.
+
+Formats.
+Label references have several variables. They are:
+
+| 1. Relative vs. absolute offset (sign extension is not used for absolute)
+  2. Little vs. big endian encoding
+  3. Bit width (8, 16, 32, or 64)
+
+Absolute offsets need a base origin, which you can specify as a parameter to the linker.
+
+  caterwaul.tconfiguration('std 
