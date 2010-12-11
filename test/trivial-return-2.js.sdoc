@@ -7,11 +7,11 @@ This program has no sections and implements the following code:
 
 The purpose is to return with exit code 42.
 
-var c = caterwaul.clone('std seq llasm.numerics llasm.elf llasm.offsets');
+var c = caterwaul.clone('std seq llasm.numerics llasm.elf llasm.asm');
 c(function (require) {
-  var code = qas[xc7 /b11_000000 /xl00000001
-                |xc7 /b11_000011 /[42] /x000000
-                |xcd_80];
+  var code = caterwaul.llasm.asm(qas[xc7 /b11_000000 /xl00000001
+                                    |xc7 /b11_000011 /[42] /x000000
+                                    |xcd_80]);
 
   var bytes = caterwaul.llasm.elf32.trivial_code(code);
 

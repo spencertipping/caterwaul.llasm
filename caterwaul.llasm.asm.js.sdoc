@@ -1,4 +1,4 @@
-Offset assembler | Spencer Tipping
+Label assembler | Spencer Tipping
 Licensed under the terms of the MIT source code license
 
 Introduction.
@@ -15,8 +15,8 @@ Label references have several variables. They are:
 
 Absolute offsets need a base origin, which you can specify as a parameter to the linker.
 
-  caterwaul.tconfiguration('std seq', 'llasm.offsets', function () {
-    this.configure('llasm.struct').llasm.offset = offset /se[
+  caterwaul.tconfiguration('std seq', 'llasm.asm', function () {
+    this.configure('llasm.struct').llasm.asm = asm /se[
 
 The expansion process.
 This is kind of delicate. Labels take up space in the initial arrays, so we can't just use the offsets of references to those labels. We first have to get rid of the labels and fill out the
@@ -24,7 +24,7 @@ displacement from the addresses, filling them in destructively at the last minut
 
 | qas[xc7c3 /top.a2l    // movl .top, %ebx -- absolute 32-bit LE offset encoded as an array of bytes
      |+top              // .top:
-     |xeb /top[-1].r8]  // jmp .top        -- relative signed 8-bit offset encoded as an array of bytes
+     |xeb /top[1].r8]   // jmp .top        -- relative signed 8-bit offset encoded as an array of bytes
 
 Here, the first step is to render the bytestream without labels and where all addresses have the value 0, yielding xc7_c3_00000000_eb_00. Then we fill in the two addresses destructively to
 obtain xc7_c3_00800408_eb_fe.
@@ -32,14 +32,16 @@ obtain xc7_c3_00800408_eb_fe.
 Note that just as in regular assembly language, labels are global! You need to come up with unique label names unless you want to render your assembly pieces separately and link them somehow.
 
   Micro-offsets.
-  In the example above, we need to offset the jump pointer by one because the address is positioned after the relative origin. That is, the jump position refers to the number of bytes from the
-  xeb byte rather than the following 8-bit position. So we need to add one to the relative offset since we're pointing from one byte behind where the label is.
+  In the example above, we need to offset the jump pointer by one because the address is positioned before the relative origin (the origin of x86 instructions is the address of the pending
+  instruction). So we need to add one to the relative offset since we're pointing from one byte ahead of where the label is.
 
-      _.pre_expand(xs)      = seq[xs -x[x instanceof Array ? _.pre_expand(x) : [x]]],
-      _.expand(xs, options) = let*[base = options.base || 0, labels  = options.labels || {}, mark_label(l, i)     = (labels[l]  || (labels[l]  = [])).push(i)      /re[[]],
-                                                             offsets = {},                   mark_offset(l, f, i) = (offsets[l] || (offsets[l] = [])).push([i, f]) /re[f(0, 0, 0)],
-                                   blanked = let[i = 0] in seq[~xs -[label(_) ? mark_label(_, i) : address(_) /re.a[a ? mark_offset(a.l, a.f, i + a.o) /se[i += _.length] : [_] /se[++i]]]]] in
-                              blanked /se[seq[sp[offsets] *!o[o[1][1](labels[o[0]] || null['Reference to undefined label #{o[0]} at offset #{o[1][0]}'], base, o[1][0]) /se.b[_[i + bi] = b]]]],
+      _.pre_expand(xs)      = seq[~xs -x[x instanceof Array ? _.pre_expand(x) : [x]]],
+      _.expand(xs, options) = let*[base = options.base || 0, labels  = options.labels || {}, mark_label(l, i)        = (labels[l] = i) /re[[]],
+                                                             offsets = {},                   mark_offset(l, f, i, o) = (offsets[l] || (offsets[l] = [])).push([i, f, o]) /re[f(0, 0, 0)],
+                                   blanked = let[i = 0] in
+                                             seq[~xs -[label(_) ? mark_label(_, i) : address(_) /re.a[a ? mark_offset(a.l, a.f, i, a.o) /se[i += _.length] : [_] /se[++i]]]]] in
+
+                              blanked /se[seq[sp[offsets] *!~o[o[1] *fp[fp[1](labels[o[0]] || null['Undefined label #{o[0]}'], base, fp[0] + fp[2]) /se.b[seq[b *b[_[fp[0] + bi] = b]]]]]]],
 
       _.encodings = seq[!(~['a', 'r'] -~r[~['8', '6', '2', '4'] -~s[~['', 'l'] *e[['#{r}#{s}#{e}', fn[x, base, p][struct.integral(1 << si, ei, !ri)(ri ? x - p : base + x)]]]]])],
 
@@ -51,12 +53,14 @@ Note that just as in regular assembly language, labels are global! You need to c
            def = _.define_expander(p, e) = def /se[expanders.push([p, e])],  expand(t)    = expander_for(t) /re[_ && _[1].apply(this, t.match(_[0])) || t],
            sub(t, f) = sub /se[def(t, fn[x, y, z][f.replace({x: expand(x), _x: x, y: expand(y), _y: y, z: expand(z), _z: z})])]] in
 
-      sub /se[_(qs[_, _], qs[x.concat(y)])(qs[_ / _], qs[x.concat(y)])(qs[_ | _], qs[x.concat(y)])(qs[~_], qs[_x]),
-              def(qs[_._], fn[x, y]['"#{x.data}:#{y.data}"'])(qs[_[_]._], fn[l, o, f]['"#{l.data}:#{o.data}:#{f.data}"'])(qs[+_], fn[l][l.data /re[/^\w+$/.test(_) && '"#{_}"']]),
+      this/mb/rmacro /se[sub(qs[_, _], qs[x, y])(qs[_ / _], qs[x, y])(qs[_ | _], qs[x, y])(qs[~_], qs[_x]),
+                         def(qs[_[_]._], fn[l, o, f]['"#{f.serialize()}:#{l.serialize()}:#{o.serialize()}"'])(qs[_._], fn[l, f]['"#{f.serialize()}:#{l.serialize()}"'])
+                            (qs[+_], fn[l][l.serialize() /re[/^\w+$/.test(_) && '"#{_}"']]),
 
-              this.rmacro(qs[qas[_]], expand)]],
+                         _(qs[qas[_]], fn[x][qs[qg[new s(xs)]].replace({s: new this.ref(caterwaul.seq.finite), xs: expand(x).as('[')})])]],
 
-    where*[offset(xs, options) = offset.expand(offset.pre_expand(xs), options),
-           label(x)            = x instanceof String && /^\w+$/.test(x),
-           address(x)          = x instanceof String && /:/.test(x) && let[ss = x.split(/:/)] in {f: _.encodings[ss[0]], l: ss[1], o: Number(ss[2] || 0)},
-           struct              = this.llasm.struct]});
+    where*[asm(xs, options) = asm.expand(asm.pre_expand(xs), options || {}),
+           struct           = this.llasm.struct,
+           label(x)         = x.constructor === String && /^\w+$/.test(x),
+           address(x)       = x.constructor === String && /:/.test(x) && let[ss = x.split(/:/)] in {f: asm.encodings[ss[0]] || null['Invalid offset encoding #{ss[0]} in #{x}'],
+                                                                                                    l: ss[1], o: Number(ss[2] || 0)}]});
