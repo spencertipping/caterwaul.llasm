@@ -12,8 +12,8 @@ Implements this logic:
   int $0x80
 
 caterwaul.clone('std seq llasm.numerics llasm.elf llasm.asm')(function (require) {
-  var mc1 = caterwaul.llasm.asm(qas[x31 /b11_011011, xb001_b10a |+top, x01 /b11_001011 | xff /b11_001001
-                                                                     | x85 /b11_001001 | x77 /top[1].r8, xcd80]);
+  var mc1 = caterwaul.llasm.asm(qas[x31 /b11_011011, xb8 /xl00000001, xb9 /xl0000000a |+top, x01 /b11_001011 | xff /b11_001001
+                                                                                           | x85 /b11_001001 | x77 /top[1].r8, xcd80]);
 
   var bytes = caterwaul.llasm.elf32.trivial_code(mc1);
   require('fs') /se.fs[
