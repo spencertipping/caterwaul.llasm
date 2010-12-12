@@ -1,0 +1,2 @@
+#!/bin/bash
+cat caterwaul.llasm.numerics.js caterwaul.llasm.struct.js caterwaul.llasm.elf.js caterwaul.llasm.asm.js > caterwaul.llasm.js
