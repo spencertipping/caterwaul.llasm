@@ -2,7 +2,7 @@
 // Licensed under the terms of the MIT source code license
 
 // Introduction.
-// Javascript's numerical facilities are quite good, but there are some situations for which the notation is suboptimal. In particular, Javascript doensn't have great support for low-level bit
+// Javascript's numerical facilities are quite good, but there are some situations for which the notation is suboptimal. In particular, Javascript doesn't have great support for low-level bit
 // flipping or preserving the byte-size of an integer. This library solves these problems.
 
 // Notation.

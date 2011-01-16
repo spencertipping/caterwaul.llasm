@@ -2,7 +2,7 @@
 // Licensed under the terms of the MIT source code license
 
 // Introduction.
-// Javascript's numerical facilities are quite good, but there are some situations for which the notation is suboptimal. In particular, Javascript doensn't have great support for low-level bit
+// Javascript's numerical facilities are quite good, but there are some situations for which the notation is suboptimal. In particular, Javascript doesn't have great support for low-level bit
 // flipping or preserving the byte-size of an integer. This library solves these problems.
 
 // Notation.
@@ -85,7 +85,7 @@
 
       _.header.reasonable  = {e_ident: x7f454c46_01010100_00000000_00000000, e_type: 2, e_machine: 3, e_version: 1, e_entry: 0x08048000 + _.header.size() + _.phdr.size(),
                               e_phoff: _.header.size(), e_shoff: 0, e_flags: 0, e_ehsize: _.header.size(), e_phentsize: _.phdr.size(), e_phnum: 1, e_shentsize: 0, e_shnum: 0, e_shstrndx: 0},
-      _.phdr.reasonable(s) = let[o = _.header.size() + _.phdr.size()] in
+      _.phdr.reasonable(s) = l[o = _.header.size() + _.phdr.size()] in
                              {p_type: 1, p_offset: o, p_vaddr: 0x08048000 + o, p_paddr: 0x08048000 + o, p_filesz: s.size(), p_memsz: s.size(), p_flags: 5, p_align: 0x1000},
 
       _.trivial_code(s) = seq[_.header(_.header.reasonable) + _.phdr(_.phdr.reasonable(s)) + s]]]});
